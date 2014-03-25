@@ -43,3 +43,17 @@ server.config
 
 # Local configuration file (sdk path, etc)
 local.properties
+
+# Gradle files
+*/.gradle/
+*/gradle/
+*/gradlew
+*/gradlew.bat
+AnyWall-android/AnyWall/build
+
+# Android Studio and IntelliJ IDEA
+*.iml
+*.ipr
+*.iws
+*.idea
+

@@ -1,0 +1,53 @@
+apply plugin: 'android'
+
+android {
+    compileSdkVersion 17
+    buildToolsVersion "19.0.3"
+
+    defaultConfig {
+        minSdkVersion 11
+        targetSdkVersion 17
+    }
+
+    File signFile = rootProject.file('sign/keystore.properties')
+    if (signFile.exists()) {
+        Properties properties = new Properties()
+        properties.load(new FileInputStream(signFile))
+        signingConfigs {
+            release {
+                storeFile rootProject.file(properties['keystore'])
+                storePassword properties['storePassword']
+                keyAlias properties['keyAlias']
+                keyPassword properties['keyPassword']
+            }
+        }
+    } else {
+        signingConfigs.release = null
+    }
+
+    Properties parseProperties = new Properties()
+    parseProperties.load(new FileInputStream(file('parse-platform.cfg')))
+
+    buildTypes {
+        release {
+            runProguard false
+            zipAlign true
+            proguardFile file('proguard-rules.cfg')
+            buildConfigField "String", "PARSE_APPLICATION_ID", parseProperties['parseApplicationId']
+            buildConfigField "String", "PARSE_CLIENT_KEY", parseProperties['parseClientKey']
+            signingConfig signingConfigs.release
+        }
+        debug {
+            runProguard false
+            zipAlign true
+            buildConfigField "String", "PARSE_APPLICATION_ID", parseProperties['parseApplicationId']
+            buildConfigField "String", "PARSE_CLIENT_KEY", parseProperties['parseClientKey']
+        }
+    }
+}
+
+dependencies {
+    compile 'com.android.support:support-v4:+'
+    compile 'com.google.android.gms:play-services:+'
+    compile files('libs/Parse-1.3.6.jar')
+}
